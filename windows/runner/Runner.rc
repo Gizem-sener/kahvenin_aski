@@ -92,7 +92,7 @@ BEGIN
             VALUE "CompanyName", "com.example" "\0"
             VALUE "FileDescription", "kahvenin_aski" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "kahvenin_aski" "\0"
+            VALUE "InternalName", "com.kahve.aski" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2024 com.example. All rights reserved." "\0"
             VALUE "OriginalFilename", "kahvenin_aski.exe" "\0"
             VALUE "ProductName", "kahvenin_aski" "\0"

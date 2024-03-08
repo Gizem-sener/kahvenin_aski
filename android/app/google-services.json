@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1067855297704",
+    "project_id": "kahveninaski",
+    "storage_bucket": "kahveninaski.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1067855297704:android:24d9ea30c5fce6e8bed69d",
+        "android_client_info": {
+          "package_name": "com.example.kahvenin_aski"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC60PQ_gq1RNwCs53awvk68KZWznqjuAkM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
