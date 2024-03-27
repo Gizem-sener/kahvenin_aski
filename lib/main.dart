@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:kahvenin_aski/firebase_options.dart';
-import 'package:kahvenin_aski/sayfalar/anasayfa.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:kahvenin_aski/sayfalar/yuklenme_sayfasi.dart';
 
 Future<void> main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -13,5 +13,5 @@ Future<void> main() async {
   );
 
   FlutterNativeSplash.remove();
-  runApp(const Anasayfa());
+  runApp(const YuklenmeSayfasi());
 }

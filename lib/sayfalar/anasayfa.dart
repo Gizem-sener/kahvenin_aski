@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:kahvenin_aski/modeller/urun_model.dart';
 import 'package:kahvenin_aski/parcalar/anasayfa_urun_widget.dart';
 import 'package:kahvenin_aski/parcalar/app_drawer.dart';
 import 'package:kahvenin_aski/parcalar/category_widget.dart';
+import 'package:flutter/gestures.dart';
 
 class Anasayfa extends StatefulWidget {
   const Anasayfa({super.key});
@@ -97,277 +99,358 @@ class _AnasayfaState extends State<Anasayfa> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Kahvenin Aşkı',
-            style: TextStyle(
-              color: Colors.white,
-            ),
-            textAlign: TextAlign.left,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Kahvenin Aşkı',
+          style: TextStyle(
+            color: Colors.white,
           ),
-          backgroundColor: Colors.redAccent.shade700,
-          centerTitle: true,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.notifications_none, color: Colors.white),
-              onPressed: () {},
-            ),
-            IconButton(
-              icon: const Icon(Icons.shopping_cart, color: Colors.white),
-              onPressed: () {},
-            ),
-          ],
+          textAlign: TextAlign.left,
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 10,
+        backgroundColor: Colors.redAccent.shade700,
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_none, color: Colors.white),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.shopping_cart, color: Colors.white),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 10,
+            ),
+            //Arama Butonu
+            const Padding(
+              padding: EdgeInsets.all(12.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  labelText: "Aramak istediğiniz ürünü giriniz...",
+                  prefixIcon: Icon(Icons.search, color: Colors.grey),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                      borderSide:
+                          BorderSide(color: Color(0xFFD1D5DB), width: 1)),
+                ),
               ),
-              //Arama Butonu
-              const Padding(
-                padding: EdgeInsets.all(12.0),
-                child: TextField(
-                  decoration: InputDecoration(
-                    labelText: "Aramak istediğiniz ürünü giriniz...",
-                    prefixIcon: Icon(Icons.search, color: Colors.grey),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                        borderSide:
-                            BorderSide(color: Color(0xFFD1D5DB), width: 1)),
+            ),
+            //Kategoriler
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Row(
+                children: [
+                  const Text(
+                    "Kategoriler",
+                    style: TextStyle(
+                      color: Color(0xFF1F2937),
+                      fontSize: 20,
+                      fontFamily: "Inter",
+                      fontWeight: FontWeight.w600,
+                      height: 0.11,
+                      letterSpacing: 0.07,
+                    ),
                   ),
-                ),
+                  const Spacer(),
+                  RichText(
+                      text: TextSpan(children: <TextSpan>[
+                    TextSpan(
+                        text: 'Tümünü Gör ->',
+                        style: const TextStyle(
+                            color: Color.fromARGB(255, 117, 117, 117),
+                            fontFamily: 'Inter',
+                            fontSize: 16),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            print('Tümünü Gör');
+                          })
+                  ])),
+                ],
               ),
-              //Kategoriler
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Row(
-                  children: [
-                    Text(
-                      "Kategoriler",
-                      style: TextStyle(
-                        color: Color(0xFF1F2937),
-                        fontSize: 14,
-                        fontFamily: "Inter",
-                        fontWeight: FontWeight.w600,
-                        height: 0.11,
-                        letterSpacing: 0.07,
-                      ),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            //Kategori Resimler (Kaydırma)
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: FutureBuilder(
+                future:
+                    FirebaseFirestore.instance.collection('categories').get(),
+                builder: (_, snapshot) {
+                  if (snapshot.hasData) {
+                    final categoryList =
+                        snapshot.data!.docs.map((e) => e.data()).toList();
+                    return Row(
+                      children: [
+                        const SizedBox(width: 6),
+                        for (final data in categoryList)
+                          CategoryWidget(
+                            title: data['title'],
+                            imageUrl: data['imageUrl'],
+                          ),
+                      ],
+                    );
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                },
+              ),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            //Slider
+            SizedBox(
+              width: 550,
+              height: 300,
+              child: PageView(
+                controller: controller,
+                children: <Widget>[
+                  Center(
+                    child: Image.asset("assets/Slider1.jpg"),
+                  ),
+                  Center(
+                    child: Image.asset("assets/Slider2.jpg"),
+                  ),
+                  Center(
+                    child: Image.asset("assets/Slider3.jpg"),
+                  ),
+                  Center(
+                    child: Image.asset("assets/Slider4.jpg"),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Icon(
+                      Icons.circle,
+                      size: 6,
+                      color: dot1,
                     ),
-                    Spacer(),
-                    Text(
-                      "Tümünü Gör ->",
-                      textAlign: TextAlign.right,
-                      style: TextStyle(
-                        color: Color(0xFF6B7280),
-                        fontSize: 12,
-                        fontFamily: "Inter",
-                        fontWeight: FontWeight.w400,
-                        height: 0.12,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 16,
-              ),
-              //Kategori Resimler (Kaydırma)
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: FutureBuilder(
-                  future:
-                      FirebaseFirestore.instance.collection('categories').get(),
-                  builder: (_, snapshot) {
-                    if (snapshot.hasData) {
-                      final categoryList =
-                          snapshot.data!.docs.map((e) => e.data()).toList();
-                      return Row(
-                        children: [
-                          const SizedBox(width: 6),
-                          for (final data in categoryList)
-                            CategoryWidget(
-                              title: data['title'],
-                              imageUrl: data['imageUrl'],
-                            ),
-                        ],
-                      );
-                    } else {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  },
-                ),
-              ),
-              const SizedBox(
-                height: 16,
-              ),
-              //Slider
-              SizedBox(
-                width: 550,
-                height: 300,
-                child: PageView(
-                  controller: controller,
-                  children: <Widget>[
-                    Center(
-                      child: Image.asset("assets/Slider1.jpg"),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Icon(
+                      Icons.circle,
+                      size: 6,
+                      color: dot2,
                     ),
-                    Center(
-                      child: Image.asset("assets/Slider2.jpg"),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Icon(
+                      Icons.circle,
+                      size: 6,
+                      color: dot3,
                     ),
-                    Center(
-                      child: Image.asset("assets/Slider3.jpg"),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Icon(
+                      Icons.circle,
+                      size: 6,
+                      color: dot4,
                     ),
-                    Center(
-                      child: Image.asset("assets/Slider4.jpg"),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Icon(
+                      Icons.circle,
+                      size: 6,
+                      color: dot5,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              Padding(
+            ),
+            //Deal of the day + Sayaç + Özel indirimler
+            Container(
+              color: const Color.fromRGBO(246, 246, 246, 1),
+              child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Icon(
-                        Icons.circle,
-                        size: 6,
-                        color: dot1,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Icon(
-                        Icons.circle,
-                        size: 6,
-                        color: dot2,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Icon(
-                        Icons.circle,
-                        size: 6,
-                        color: dot3,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Icon(
-                        Icons.circle,
-                        size: 6,
-                        color: dot4,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Icon(
-                        Icons.circle,
-                        size: 6,
-                        color: dot5,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              //Deal of the day + Sayaç + Özel indirimler
-              Container(
-                color: const Color.fromRGBO(246, 246, 246, 1),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 16.0),
-                        child: Row(
-                          children: [
-                            Text(
-                              "Günün Fırsatları",
-                              style: TextStyle(
-                                color: Color.fromARGB(255, 151, 0, 38),
-                                fontSize: 14,
-                                fontFamily: "Inter",
-                                fontWeight: FontWeight.w600,
-                                height: 0.11,
-                                letterSpacing: 0.07,
-                              ),
-                            ),
-                            Spacer(),
-                            Text(
-                              "Tümünü Gör ->",
-                              textAlign: TextAlign.right,
-                              style: TextStyle(
-                                color: Color(0xFF6B7280),
-                                fontSize: 12,
-                                fontFamily: "Inter",
-                                fontWeight: FontWeight.w400,
-                                height: 0.12,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      Row(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 16.0),
+                      child: Row(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 14.0, vertical: 2),
-                            child: Container(
-                              height: 30,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                color: const Color.fromARGB(255, 239, 68, 68),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: Text(
-                                  "${_timeUntilTarget.inDays} DAY ${_timeUntilTarget.inHours % 24} HRS ${_timeUntilTarget.inMinutes % 60} MIN ${_timeUntilTarget.inSeconds % 60} SEC",
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                      color:
-                                          Color.fromARGB(255, 255, 255, 255)),
-                                ),
+                          const Text(
+                            "Günün Fırsatları",
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 151, 0, 38),
+                              fontSize: 20,
+                              fontFamily: "Inter",
+                              fontWeight: FontWeight.w600,
+                              height: 0.11,
+                              letterSpacing: 0.07,
+                            ),
+                          ),
+                          const Spacer(),
+                          RichText(
+                              text: TextSpan(children: <TextSpan>[
+                            TextSpan(
+                                text: 'Tümünü Gör ->',
+                                style: const TextStyle(
+                                    color: Color.fromARGB(255, 117, 117, 117),
+                                    fontFamily: 'Inter',
+                                    fontSize: 16),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    print('Tümünü Gör');
+                                  })
+                          ])),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14.0, vertical: 2),
+                          child: Container(
+                            height: 30,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: const Color.fromARGB(255, 239, 68, 68),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Text(
+                                "${_timeUntilTarget.inDays} DAY ${_timeUntilTarget.inHours % 24} HRS ${_timeUntilTarget.inMinutes % 60} MIN ${_timeUntilTarget.inSeconds % 60} SEC",
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                    color: Color.fromARGB(255, 255, 255, 255)),
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                      Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(14.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: const Color.fromRGBO(255, 255, 255, 1),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(13.0),
-                              child: Column(
-                                children: [
-                                  Row(
+                        ),
+                      ],
+                    ),
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(14.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: const Color.fromRGBO(255, 255, 255, 1),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(13.0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Image.asset(
+                                          "assets/kapsul.jpg",
+                                          height: 100,
+                                          width: 100,
+                                        ),
+                                        const Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            "Ganoderma Kapsül",
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16),
+                                          ),
+                                        ),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                            color: const Color.fromARGB(
+                                                255, 239, 68, 68),
+                                          ),
+                                          child: const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 5.0),
+                                            child: Text(
+                                              "Üyelik Avantajları",
+                                              style: TextStyle(
+                                                  color: Color.fromRGBO(
+                                                      255, 255, 255, 1)),
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    const Spacer(),
+                                    Column(
+                                      children: [
+                                        Image.asset(
+                                          "assets/misty.jpg",
+                                          height: 100,
+                                          width: 100,
+                                        ),
+                                        const Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Text(
+                                            "Ganoderma Yüz Misti",
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                            color: const Color.fromARGB(
+                                                255, 239, 68, 68),
+                                          ),
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(5.0),
+                                            child: Text(
+                                              "%40'a Varan İndirimler",
+                                              style: TextStyle(
+                                                  color: Color.fromRGBO(
+                                                      255, 255, 255, 1)),
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    )
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 16.0),
+                                  child: Row(
                                     children: [
                                       Column(
                                         children: [
                                           Image.asset(
-                                            "assets/kapsul.jpg",
+                                            "assets/classic.jpg",
                                             height: 100,
                                             width: 100,
                                           ),
                                           const Padding(
-                                            padding: EdgeInsets.all(8.0),
-                                            child: Text(
-                                              "Ganoderma Kapsül",
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16),
-                                            ),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 5.0),
+                                            child: Text("Klasik Kahve",
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.bold)),
                                           ),
                                           Container(
                                             decoration: BoxDecoration(
@@ -379,7 +462,7 @@ class _AnasayfaState extends State<Anasayfa> {
                                             child: const Padding(
                                               padding: EdgeInsets.all(5.0),
                                               child: Text(
-                                                "Üyelik Avantajları",
+                                                "Reishi Mantarı Mucizesi",
                                                 style: TextStyle(
                                                     color: Color.fromRGBO(
                                                         255, 255, 255, 1)),
@@ -391,15 +474,13 @@ class _AnasayfaState extends State<Anasayfa> {
                                       const Spacer(),
                                       Column(
                                         children: [
-                                          Image.asset(
-                                            "assets/misty.jpg",
-                                            height: 100,
-                                            width: 100,
-                                          ),
+                                          Image.asset("assets/supreno.jpg",
+                                              height: 100, width: 100),
                                           const Padding(
-                                            padding: EdgeInsets.all(8.0),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 10.0),
                                             child: Text(
-                                              "Ganoderma Yüz Misti",
+                                              "Enerji verici kahve",
                                               style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.bold),
@@ -415,7 +496,7 @@ class _AnasayfaState extends State<Anasayfa> {
                                             child: const Padding(
                                               padding: EdgeInsets.all(5.0),
                                               child: Text(
-                                                "%40'a Varan İndirimler",
+                                                "40-60% İndirim",
                                                 style: TextStyle(
                                                     color: Color.fromRGBO(
                                                         255, 255, 255, 1)),
@@ -426,261 +507,164 @@ class _AnasayfaState extends State<Anasayfa> {
                                       )
                                     ],
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 16.0),
-                                    child: Row(
-                                      children: [
-                                        Column(
-                                          children: [
-                                            Image.asset(
-                                              "assets/classic.jpg",
-                                              height: 100,
-                                              width: 100,
-                                            ),
-                                            const Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text("Klasik Kahve",
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.bold)),
-                                            ),
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                                color: const Color.fromARGB(
-                                                    255, 239, 68, 68),
-                                              ),
-                                              child: const Padding(
-                                                padding: EdgeInsets.all(5.0),
-                                                child: Text(
-                                                  "Reishi Mantarı Mucizesi",
-                                                  style: TextStyle(
-                                                      color: Color.fromRGBO(
-                                                          255, 255, 255, 1)),
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                        const Spacer(),
-                                        Column(
-                                          children: [
-                                            Image.asset("assets/supreno.jpg",
-                                                height: 100, width: 100),
-                                            const Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: Text(
-                                                "Ginseng içeren enerji verici kahve",
-                                                style: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ),
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                                color: const Color.fromARGB(
-                                                    255, 239, 68, 68),
-                                              ),
-                                              child: const Padding(
-                                                padding: EdgeInsets.all(5.0),
-                                                child: Text(
-                                                  "40-60% İndirim",
-                                                  style: TextStyle(
-                                                      color: Color.fromRGBO(
-                                                          255, 255, 255, 1)),
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
+                                )
+                              ],
                             ),
                           ),
                         ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              // İçecek Serisi
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Text(
-                      "İçecek Serisi",
-                      style: TextStyle(
-                        color: Color(0xFF1F2937),
-                        fontSize: 14,
-                        fontFamily: "Inter",
-                        fontWeight: FontWeight.w600,
-                        height: 0.11,
-                        letterSpacing: 0.07,
-                      ),
-                    ),
-                    Spacer(),
-                    Text(
-                      "Tümünü Gör ->",
-                      textAlign: TextAlign.right,
-                      style: TextStyle(
-                        color: Color(0xFF6B7280),
-                        fontSize: 12,
-                        fontFamily: "Inter",
-                        fontWeight: FontWeight.w400,
-                        height: 0.12,
                       ),
                     )
                   ],
                 ),
               ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(children: [
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Image.asset(
-                      "assets/cay.jpg",
-                      width: 250,
-                      height: 250,
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            // İçecek Serisi
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  const Text(
+                    "İçecek Serisi",
+                    style: TextStyle(
+                      color: Color(0xFF1F2937),
+                      fontSize: 20,
+                      fontFamily: "Inter",
+                      fontWeight: FontWeight.w600,
+                      height: 0.11,
+                      letterSpacing: 0.07,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Image.asset(
-                      "assets/sizeozel.jpg",
-                      width: 250,
-                      height: 250,
-                    ),
-                  ),
-                  Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Image.asset(
-                        "assets/classic.jpg",
-                        width: 250,
-                        height: 250,
-                      )),
-                ]),
+                  const Spacer(),
+                  RichText(
+                      text: TextSpan(children: <TextSpan>[
+                    TextSpan(
+                        text: 'Tümünü Gör ->',
+                        style: const TextStyle(
+                            color: Color.fromARGB(255, 117, 117, 117),
+                            fontFamily: 'Inter',
+                            fontSize: 16),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            print('Tümünü Gör');
+                          })
+                  ])),
+                ],
               ),
-              const SizedBox(height: 20),
-              // Size Özel
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Text(
-                      "Size Özel",
-                      style: TextStyle(
-                        color: Color(0xFF1F2937),
-                        fontSize: 14,
-                        fontFamily: "Inter",
-                        fontWeight: FontWeight.w600,
-                        height: 0.11,
-                        letterSpacing: 0.07,
+            ),
+            FutureBuilder(
+                future: FirebaseFirestore.instance.collection('products').get(),
+                builder: (_, snapshot) {
+                  if (snapshot.hasData) {
+                    final urunler = snapshot.data!.docs
+                        .map((e) => UrunModel.fromFirestore(e.data(), e.id));
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          for (final urun in urunler)
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: AnasayfaUrunWidget(urun: urun),
+                            ),
+                        ],
                       ),
+                    );
+                  }
+                  return const Center(child: CircularProgressIndicator());
+                }),
+            const SizedBox(height: 20),
+            // Size Özel
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  const Text(
+                    "Size Özel",
+                    style: TextStyle(
+                      color: Color(0xFF1F2937),
+                      fontSize: 20,
+                      fontFamily: "Inter",
+                      fontWeight: FontWeight.w600,
+                      height: 0.11,
+                      letterSpacing: 0.07,
                     ),
-                    Spacer(),
-                    Text(
-                      "Tümünü Gör ->",
-                      textAlign: TextAlign.right,
-                      style: TextStyle(
-                        color: Color(0xFF6B7280),
-                        fontSize: 12,
-                        fontFamily: "Inter",
-                        fontWeight: FontWeight.w400,
-                        height: 0.12,
-                      ),
-                    )
-                  ],
-                ),
+                  ),
+                  const Spacer(),
+                  RichText(
+                      text: TextSpan(children: <TextSpan>[
+                    TextSpan(
+                        text: 'Tümünü Gör ->',
+                        style: const TextStyle(
+                            color: Color.fromARGB(255, 117, 117, 117),
+                            fontFamily: 'Inter',
+                            fontSize: 16),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            print('Tümünü Gör');
+                          })
+                  ])),
+                ],
               ),
-              const SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(children: [
-                  Padding(
-                    padding: EdgeInsets.all(11.0),
-                    child: AnasayfaUrunWidget(
-                      resimAdresi: "assets/classic.jpg",
-                      baslik: "Klasik Kahve",
-                      tryFiyat: 400,
-                      indirimOrani: 20.0,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: AnasayfaUrunWidget(
-                      resimAdresi: "assets/supreno.jpg",
-                      baslik: "Ginseng İçeren Enerji Verici Kahve",
-                      tryFiyat: 500,
-                      indirimOrani: 20.0,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(11.0),
-                    child: AnasayfaUrunWidget(
-                      resimAdresi: "assets/misty.jpg",
-                      baslik: "Ganoderma Yüz Misti",
-                      tryFiyat: 700,
-                      indirimOrani: 20.0,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: AnasayfaUrunWidget(
-                        baslik: "Ganoderma Ekstratlı Kapsül",
-                        resimAdresi: "assets/kapsul.jpg",
-                        tryFiyat: 700,
-                        indirimOrani: 20.0),
-                  ),
-                ]),
-              ),
-            ],
-          ),
-        ),
-        drawer: const AppDrawer(),
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Colors.red,
-          selectedItemColor: Colors.white,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: "Anasayfa",
-              backgroundColor: Color.fromARGB(50, 25, 155, 120),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.menu_book_rounded),
-              label: "Kategoriler",
-              backgroundColor: Color.fromARGB(50, 25, 155, 120),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.production_quantity_limits),
-              label: "Siparişlerim",
-              backgroundColor: Color.fromARGB(50, 25, 155, 120),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_pin),
-              label: "Profilim",
-              backgroundColor: Color.fromARGB(50, 25, 155, 120),
+            FutureBuilder(
+              future: FirebaseFirestore.instance.collection('foryou').get(),
+              builder: (_, snapshot) {
+                if (snapshot.hasData) {
+                  final urunler = snapshot.data!.docs
+                      .map((e) => UrunModel.fromFirestore(e.data(), e.id));
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        for (final urun in urunler)
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: AnasayfaUrunWidget(urun: urun),
+                          ),
+                      ],
+                    ),
+                  );
+                }
+                return const Center(child: CircularProgressIndicator());
+              },
             ),
           ],
-          selectedLabelStyle: const TextStyle(color: Colors.black),
-          unselectedLabelStyle: const TextStyle(color: Colors.black),
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          type: BottomNavigationBarType.fixed,
         ),
+      ),
+      drawer: const AppDrawer(),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.red,
+        selectedItemColor: Colors.white,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: "Anasayfa",
+            backgroundColor: Color.fromARGB(50, 25, 155, 120),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.menu_book_rounded),
+            label: "Kategoriler",
+            backgroundColor: Color.fromARGB(50, 25, 155, 120),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.production_quantity_limits),
+            label: "Siparişlerim",
+            backgroundColor: Color.fromARGB(50, 25, 155, 120),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_pin),
+            label: "Profilim",
+            backgroundColor: Color.fromARGB(50, 25, 155, 120),
+          ),
+        ],
+        selectedLabelStyle: const TextStyle(color: Colors.black),
+        unselectedLabelStyle: const TextStyle(color: Colors.black),
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }

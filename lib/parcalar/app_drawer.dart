@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:kahvenin_aski/sayfalar/bize_ulasin.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -29,53 +31,47 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
           ),
-          const ListTile(
+          ListTile(
             /* onTap:  () {
             Navigator.push(context, MaterialPageRoute(
               builder: ((context) => Urunler())));
           }, */
-            title: Text("Ürünler"),
-            leading: Icon(Icons.category_rounded),
+            onTap: () {},
+            title: const Text("Ürünler"),
+            leading: const Icon(Icons.category_rounded),
           ),
-          const ListTile(
-            /* onTap: () {
-            Navigator.push(context, MaterialPageRoute(
-              builder: ((context) => Siparisler())));
-              }, */
-            title: Text("Siparişlerim"),
-            leading: Icon(Icons.shopping_bag_rounded),
+          ListTile(
+            onTap: () {},
+            title: const Text("Siparişlerim"),
+            leading: const Icon(Icons.shopping_bag_rounded),
           ),
-          const ListTile(
-            /* onTap: () {
-            Navigator.push(context, MaterialPageRoute(
-              builder: ((context) => Favoriler())));
-              },  */
-            leading: Icon(Icons.favorite_rounded),
-            title: Text("Favorilerim"),
+          ListTile(
+            onTap: () {},
+            leading: const Icon(Icons.favorite_rounded),
+            title: const Text("Favorilerim"),
           ),
-          const ListTile(
-            /*  onTap: () {
-            Navigator.push(context, MaterialPageRoute(
-              builder: ((context) => Adresler())));
-              }, */
-            title: Text("Bize Ulaşın"),
-            leading: Icon(Icons.mail_rounded),
+          ListTile(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: ((context) => const BizeUlasin())));
+            },
+            title: const Text("Bize Ulaşın"),
+            leading: const Icon(Icons.mail_rounded),
           ),
-          const ListTile(
-            /*  onTap: () {
-            Navigator.push(context, MaterialPageRoute(
-              builder: ((context) => Ayarlar())));
-              }, */
-            title: Text("Ayarlar"),
-            leading: Icon(Icons.settings_rounded),
+          ListTile(
+            onTap: () {},
+            title: const Text("Ayarlar"),
+            leading: const Icon(Icons.settings_rounded),
           ),
-          const ListTile(
-            /*  onTap: () {
-            Navigator.push(context, MaterialPageRoute(
-              builder: ((context) => CikisYap())));
-              }, */
-            title: Text("Çıkış Yap"),
-            leading: Icon(Icons.logout_rounded),
+          ListTile(
+            onTap: () {
+              FirebaseAuth.instance.signOut();
+              Scaffold.of(context).closeDrawer();
+            },
+            title: const Text("Çıkış Yap"),
+            leading: const Icon(Icons.logout_rounded),
           ),
         ],
       ),

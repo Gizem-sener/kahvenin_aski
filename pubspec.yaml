@@ -38,6 +38,9 @@ dependencies:
   cloud_firestore: ^4.15.6
   firebase_core: ^2.26.0
   flutter_native_splash: ^2.3.10
+  firebase_auth: ^4.17.8
+  contactus: ^1.2.3
+  carousel_slider: ^4.2.1
 
 flutter_native_splash:
   color: "#790000"
